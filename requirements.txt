@@ -1,0 +1,4 @@
+Pillow==9.5.0
+Pillow==9.5.0
+pytz==2023.3
+Requests==2.31.0
