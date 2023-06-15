@@ -1,16 +1,5 @@
-
-# INFO
-TOKEN = "" # Your discord token
-DELAY = 30 # Delay in seconds between every check for hour if changed.
-# As far as i know discord allows 2 changes per hour.
-BASE_URL = 'https://discordapp.com/api/v9'
-
-# Your Timezone
-# https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-Timezone = 'Asia/Riyadh'
-
 from PIL import ImageFont, ImageDraw, Image
-
+import os
 import datetime
 import json
 import base64
@@ -20,10 +9,17 @@ import io
 from pytz import timezone
 import random
 import math
+from dotenv import load_dotenv
 
+load_dotenv()
+TOKEN = os.getenv("TOKEN")
+DELAY = os.getenv("DELAY")
+BASE_URL = os.getenv("BASE_URL")
+TIMEZONE = os.getenv("TIMEZONE")
 COLOR_COMPONENT_SIMILARITY_THRESHOLD = 50
 COLOR_BRIGHTNESS_THRESHOLD = 0.8
 COLOR_DARKNESS_THRESHOLD = 0.2
+
 
 
 def _get_distance(a_x, a_y, b_x, b_y):
@@ -129,7 +125,7 @@ def generate_gradient(width: int, height: int):
     
     return im,fntcolor
 
-now_time = datetime.datetime.now(timezone(Timezone))
+now_time = datetime.datetime.now(timezone(str(TIMEZONE)))
 currtime = now_time.strftime('%I:00 %p')
 currdate = now_time.strftime("%B %d, %Y")
 currday = now_time.strftime("%A")
@@ -175,12 +171,12 @@ def create_image(size):
     center_text(image, W*2, H*1.87, DipS, 'Made with ♥ by alMajor',fontColor)
     return image
 
-# myImage = create_image((600,240))
-# myImage.save('banner.png', "PNG")
+myImage = create_image((600,240))
+myImage.save('banner.png', "PNG")
 
 current = 0
 while True:
-    time.sleep(DELAY)
+    time.sleep(int(DELAY))
     if datetime.datetime.now().hour != current:
         current = datetime.datetime.now().hour
         myImage = create_image((600,240))
@@ -195,10 +191,10 @@ while True:
 
         headers = {
             'Accept': '*/*',
-            'Authorization': f'{TOKEN}',
+            'Authorization': f'{str(TOKEN)}',
             'Content-Type': 'application/json'
         }
-        r = requests.patch(f'{BASE_URL}/users/@me', data=json.dumps(payload), headers=headers)
+        r = requests.patch(f'{str(BASE_URL)}/users/@me', data=json.dumps(payload), headers=headers)
         if r.status_code == 200:
             print ('Changed!')
         else:
